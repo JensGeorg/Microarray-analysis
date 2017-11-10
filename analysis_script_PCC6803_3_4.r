@@ -1,46 +1,5 @@
 
 
-crossNorm<-function(x){  #all against all
-
-n<-ncol(x)
-out<-c()
-n2<-n-1
-na<-c()
-for(i in 1:(n-1)){
-	for(j in 1:n2){
-		temp1<-c(x[,i],x[,i+j])
-		na<-c(na,paste(colnames(x)[i],colnames(x)[i+j], sep="!"))
-		
-		out<-cbind(out,temp1)
-	}
-	n2<-n2-1
-}
-colnames(out)<-na
-
-out<-normalizeBetweenArrays(out, method="quantile")
-
-out2<-c()
-na2<-c()
-for(i in 1:ncol(out)){
-	temp1<-out[1:(nrow(out)/2),i]
-	temp2<-out[(nrow(out)/2+1):nrow(out),i]
-	tempna<-strsplit(colnames(out)[i],"!")[[1]]
-	na2<-c(na2,tempna)
-	out2<-cbind(out2,temp1,temp2)
-}
-colnames(out2)<-na2
-
-conds<-unique(colnames(out2))
-
-out3<-c()
-for(i in 1:length(conds)){
-	temp<-which(colnames(out2)==conds[i])
-	temp<-rowMeans(out2[,temp])
-	out3<-cbind(out3,temp)
-}
-colnames(out3)<-conds
-out3
-}
 
 
 ascomb<-function(out,outFC){
@@ -497,18 +456,14 @@ sub2[[i+count]]<-temp1
 count<-count+1
 temp2<- normalizeBetweenArrays(sub1[[i]], method="cyclicloess", weights=weights_vect, cyclic.method="affy")
 sub2[[i+count]]<-temp2
-count<-count+1
-temp3<- crossNorm(sub1[[i]]$E)
-temp4<-normalizeBetweenArrays(sub1[[i]], method="none")
-temp4$E<-log2(temp3)
-sub2[[i+count]]<-temp4
+
 }
-sub2[[7]]<-normalizeBetweenArrays(RG, method="none")
-names(sub2)<-c("quantile","cyclicloess","crossnorm","normexp_quantile","normexp_cyclicloess", "normexp_crossnorm","raw")
+sub2[[5]]<-normalizeBetweenArrays(RG, method="none")
+names(sub2)<-c("quantile","cyclicloess","normexp_quantile","normexp_cyclicloess","raw")
 
 sub3<-sub2
 selec<-select.list(c("TRUE","FALSE"),title = "exclude non-expressed probes?")
-for(i in 1:7){
+for(i in 1:5){
 neg95 <- apply(sub2[[i]]$E[sub2[[i]]$genes$ControlType==-1,],2,function(x) quantile(x,p=0.95))
 
 if(selec==TRUE){
@@ -526,8 +481,7 @@ sub_TU<-sub3
 
 
 
-for(i in 1:7){
-print(i)
+for(i in 1:5){
 sub_probes[[i]]<-avereps(sub_probes[[i]], ID=sub_probes[[i]]$genes$ProbeName)
 sub_features[[i]]<-avereps(sub_probes[[i]], ID=sub_probes[[i]]$genes$SystematicName)
 sub_TU[[i]]<-avereps(sub_probes[[i]], ID=sub_probes[[i]]$genes$TU.ID)
@@ -553,7 +507,7 @@ write.table(geo, file="file_for_geo_submission_cyclicloess.txt", sep="\t")
 geo<-cbind(RG$genes$FeatureNum,out[[3]][[3]]$E)
 write.table(geo, file="file_for_geo_submission_normexp_quantile.txt", sep="\t")
 geo<-cbind(RG$genes$FeatureNum,out[[3]][[4]]$E)
-write.table(geo, file="file_for_geo_submission_normexp_cyclicloess.txt", sep="\t")
+write.table(geo, file="file_for_geo_submission_normexo_cyclicloess.txt", sep="\t")
 
 
 save(out, file="out.Rdata")
@@ -572,30 +526,30 @@ targets<-x[[1]]
 raw1<-x[[2]]
 sub2<-x[[3]]
 nab<-paste(di,"Densities_boxplots_PCA.pdf", sep="/")
-pdf(file="Densities_boxplots_PCA.pdf", paper="a4r", width=0, height=0)
+pdf(file=nab, paper="a4r", width=0, height=0)
 
-for(i in 1:7){
+for(i in 1:5){
 	plotDensities(sub2[[i]][[1]], main=names(sub2)[i], legend="topright")
 }
 
-for(i in 1:7){
+for(i in 1:5){
 	boxplot(sub2[[i]][[1]], main=names(sub2)[i])
 }
-for(i in 1:7){
+for(i in 1:5){
 	plotMDS(sub2[[i]][[1]], main=names(sub2)[i])
 }
 
 dev.off()
 
-# nab<-paste(di,"raw_data_quality", sep="/")
-# p<-matrix(targets$Cy3,length(colnames(raw1$E)),1, dimnames=list(colnames(raw1$E), "condition"))
-# p<-as.data.frame(p) 
-# m<-data.frame(labelDescription="condition", row.names="condition")
-# phenoData <- new("AnnotatedDataFrame", data=p, varMetadata=m)
-# a<-ExpressionSet(assayData=raw1$E, phenoData=phenoData)
-# arrayQualityMetrics(a, outdir = nab, spatial=TRUE, intgroup="condition",do.logtransform=TRUE)
+nab<-paste(di,"raw_data_quality", sep="/")
+p<-matrix(targets$Cy3,length(colnames(raw1$E)),1, dimnames=list(colnames(raw1$E), "condition"))
+p<-as.data.frame(p) 
+m<-data.frame(labelDescription="condition", row.names="condition")
+phenoData <- new("AnnotatedDataFrame", data=p, varMetadata=m)
+a<-ExpressionSet(assayData=raw1$E, phenoData=phenoData)
+arrayQualityMetrics(a, outdir = nab, spatial=TRUE, intgroup="condition",do.logtransform=TRUE)
 
-for(i in 1:7){
+for(i in 1:4){
 nab<-paste(di,names(sub2)[i], sep="/")
 p<-matrix(targets$Cy3,length(colnames(sub2[[i]]$E)),1, dimnames=list(colnames(sub2[[i]]$E), "condition"))
 p<-as.data.frame(p) 
@@ -609,14 +563,14 @@ arrayQualityMetrics(a, outdir = nab, spatial=TRUE, intgroup="condition",do.logtr
 
 
 
-# for(i in 1:4){
-# dat<-sub2[[i]]$E
-
-# jpeg(file=paste(names(dat),".jpeg",sep=""), width = 1920, height = 1080)
-# par(mfrow = c(1, 1))
-# plot(as.data.frame(dat), main="cyclicloess")
-# dev.off()
-# }
+for(i in 1:4){
+dat<-sub2[[i]]$E
+nab<-paste(di,names(dat)[i], sep="/")
+jpeg(file=paste(di,nab,sep="/"), width = 1920, height = 1080)
+par(mfrow = c(1, 1))
+plot(as.data.frame(dat), main="cyclicloess")
+dev.off()
+}
 
 
 
@@ -668,7 +622,7 @@ sub_features_fit<-x[[6]]
 sub_TU_fit<-x[[7]]
 Nas<-which(is.na(x[[7]][[1]]$genes$TU.ID))
 
-for(i in 1:7){
+for(i in 1:5){
 sub_TU_fit[[i]]$E<-sub_TU_fit[[i]]$E[-Nas,]
 sub_TU_fit[[i]]$Eb<-sub_TU_fit[[i]]$Eb[-Nas,]
 sub_TU_fit[[i]]$genes<-sub_TU_fit[[i]]$genes[-Nas,]
@@ -676,7 +630,7 @@ sub_TU_fit[[i]]$genes<-sub_TU_fit[[i]]$genes[-Nas,]
 
 
 
-for(i in 1:7){
+for(i in 1:5){
 sub_probes_fit[[i]]<- eBayes(contrasts.fit(lmFit(sub_probes_fit[[i]], design), cont.wt))
 sub_features_fit[[i]]<- eBayes(contrasts.fit(lmFit(sub_features_fit[[i]], design), cont.wt))
 sub_TU_fit[[i]]<- eBayes(contrasts.fit(lmFit(sub_TU_fit[[i]], design), cont.wt))
@@ -684,19 +638,19 @@ sub_TU_fit[[i]]<- eBayes(contrasts.fit(lmFit(sub_TU_fit[[i]], design), cont.wt))
 
 pdf(file="Sigma vs A plot.pdf", paper="a4r", width=0, height=0)
 par(mfrow=c(3,2))
-for( i in 1:7){
+for( i in 1:5){
 	plotSA(sub_probes_fit[[i]], main=names(sub_probes_fit)[i])
 }
 par(mfrow=c(1,1))
 
 
 par(mfrow=c(3,2))
-for( i in 1:7){
+for( i in 1:5){
 	plotSA(sub_features_fit[[i]], main=names(sub_features_fit)[i])
 }
 par(mfrow=c(1,1))
 
-for( i in 1:7){
+for( i in 1:5){
 	plotSA(sub_TU_fit[[i]], main=names(sub_TU_fit)[i])
 }
 par(mfrow=c(1,1))
@@ -714,7 +668,7 @@ lfc<-as.numeric(lfc)
 
 met<-select.list(c("separate","global"), title="decideTests_method (see manual)")
 
-for(i in 1:7){
+for(i in 1:5){
 results_probes[[i]]<-topTable(sub_probes_fit[[i]], sort="none",n=Inf)
 results_features[[i]]<-topTable(sub_features_fit[[i]], sort="none",n=Inf)
 results_TU[[i]]<-topTable(sub_TU_fit[[i]], sort="none",n=Inf)
@@ -724,7 +678,7 @@ decide_probes<-list()
 decide_features<-list()
 decide_TU<-list()
 
-for(i in 1:7){
+for(i in 1:5){
 decide_probes[[i]]<-decideTests(sub_probes_fit[[i]],method=met,adjust.method="BH",p.value=p.value,lfc=lfc)
 decide_features[[i]]<-decideTests(sub_features_fit[[i]],method=met,adjust.method="BH",p.value=p.value,lfc=lfc)
 decide_TU[[i]]<-decideTests(sub_TU_fit[[i]],method=met,adjust.method="BH",p.value=p.value,lfc=lfc)
@@ -735,7 +689,7 @@ summary_probes<-c()
 summary_features<-c()
 summary_TU<-c()
 
-for(i in 1:7){
+for(i in 1:5){
 
 summary_probes<-rbind(summary_probes, colSums(abs(decide_probes[[i]])))
 summary_features<-rbind(summary_features, colSums(abs(decide_features[[i]])))
@@ -747,9 +701,9 @@ write.table(summary_TU, file="summary_TU.txt", sep="\t")
 }
 
 
-rownames(summary_probes)<-c("quantile","cyclicloess","crossnorm","normexp_quantile","normexp_cyclicloess", "normexp_crossnorm","raw")
-rownames(summary_features)<-c("quantile","cyclicloess","crossnorm","normexp_quantile","normexp_cyclicloess", "normexp_crossnorm","raw")
-rownames(summary_TU)<-c("quantile","cyclicloess","crossnorm","normexp_quantile","normexp_cyclicloess", "normexp_crossnorm","raw")
+rownames(summary_probes)<-c("quantile","cyclicloess","normexp_qunatile","normexp_cyclicloess","raw")
+rownames(summary_features)<-c("quantile","cyclicloess","normexp_quantile","normexp_cyclicloess", "raw")
+rownames(summary_TU)<-c("quantile","cyclicloess","normexp_quantile","normexp_cyclicloess", "raw")
 
 summary_probes<-cbind(summary_probes, rowSums(summary_probes))
 summary_features<-cbind(summary_features, rowSums(summary_features))
@@ -760,7 +714,7 @@ jpeg(file=naf)
 barplot(t(summary_features[,1:(ncol(summary_features)-1)]),legend.text=TRUE,args.legend = list(x = "topleft", bty="n", cex=0.5),cex.names=0.7,main=paste(paste("adj. P.value =",p.value),paste("Foldchange =",lfc),paste("Method =",met),sep=", "))
 dev.off()
 
-for(i in 1:7){
+for(i in 1:5){
 results_probes[[i]]<-cbind(results_probes[[i]],decide_probes[[i]])
 an<-rep(NA,nrow(results_probes[[i]]))
 an[1:3]<-c(paste("adj. P.value =",p.value),paste("Foldchange =",lfc),paste("Method =",met))
@@ -780,8 +734,8 @@ results_TU[[i]]<-cbind(results_TU[[i]],an)
 
 
 
-variants<-c("quantile","cyclicloess","crossnorm","normexp_quantile","normexp_cyclicloess", "normexp_crossnorm","raw")
-for(i in 1:7){
+variants<-c("quantile","cyclicloess","normexp_qunatile","normexp_cyclicloess","raw")
+for(i in 1:5){
 naf<-paste("results", variants[i],"features.txt", sep="_")
 naf<-paste(di,naf, sep="/")
 write.table(results_features[[i]], file=naf, sep="\t")
@@ -1080,7 +1034,7 @@ out_data<-output
 
 sel<-select.list(names(out_data))
 sel<-which(names(out_data)==sel)
-sel_nam<-names(out_data)[sel]
+
 out_data<-out_data[[sel]]
 
 seqset1<-colnames(out_data[[1]][[8]])
@@ -1115,7 +1069,7 @@ print(offset)
 print(ylim)
 
 "pdf_ausgabe"
-nab<-paste(names(out_data)[jj],sel_nam ,"_", name, ".pdf", sep="")
+nab<-paste(names(out_data)[jj],names(out_data)[sel] , name, ".pdf", sep="")
 st<-1
 en2<-nrow(output[[7]])
 en<-nrow(output[[7]])%/%10000
