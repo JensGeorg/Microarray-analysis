@@ -858,7 +858,7 @@ colnames(g)<-colnames(tab)
 posx<-(g[,(ncol(g))-2] + g[,(ncol(g))] /2)
 
 len<-as.numeric(as.character(tab[,(ncol(tab)-1)]))-as.numeric(as.character(tab[,(ncol(tab)-2)]))
-len[which(len<=10)]<-50 # workaround für anno fehler
+len[which(len<=10)]<-50 # workaround fÃ¼r anno fehler
 tab[,ncol(tab)]<-len
 
 ma<-max(ddd)
@@ -996,9 +996,9 @@ new<-"la"
 con<-conditions
 count<-1
 for(i in 1:length(con)){
-ö<-grep(paste("i",new[length(new)],"i"),paste("i",con,"i"))
-if(length(ö)>0){
-con<-con[-ö]}
+Ã¶<-grep(paste("i",new[length(new)],"i"),paste("i",con,"i"))
+if(length(Ã¶)>0){
+con<-con[-Ã¶]}
 ne<-select.list(con, multiple=F, title=paste("choose condition",count, sep=" "))
 count<-count+1
 new<-c(new,ne)
@@ -1083,7 +1083,7 @@ genomeplot(max(0,(en2-10000)),en2,output,conditionsused,color,offset=offset,ylim
 dev.off()
 }
 else{
-genomeplot(s,e,output,conditionsused,color,offset=offset,ylim=ylim,  linie=linie)
+genomeplot(s,e,output,conditionsused,color,offset=offset,ylim=ylim,  linie=linie,repliconsize=en2, seqcol=seqcol, seqset=seqset)
 dev.off()
 }
 }
@@ -1117,9 +1117,9 @@ dev.off()
 #con<-conditionsused
 #count<-1
 #for(i in 1:length(con)){
-#ö<-grep(new[length(new)],con)
-#if(length(ö)>0){
-#con<-con[-ö]}
+#Ã¶<-grep(new[length(new)],con)
+#if(length(Ã¶)>0){
+#con<-con[-Ã¶]}
 #ne<-select.list(con, multiple=F, title=paste("choose condition",count, sep=" "))
 #count<-count+1
 #new<-c(new,ne)
@@ -1388,7 +1388,7 @@ legend("topright", legend=c("(-) total RNA","(+) with primary 5'ends" ),bty="n",
 
 
 
-#restrictionssites einzeichnen für TMDH
+#restrictionssites einzeichnen fÃ¼r TMDH
 if(rest==TRUE){
 ll<-numeric(0)
 for (i in 1:length(hpaII)){
