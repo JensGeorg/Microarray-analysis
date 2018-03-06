@@ -985,6 +985,7 @@ colnames(graph)[2:ncol(graph)]<-as.character(seqset[1,])
   
   
   
+  
 drawgenomeplot<-function(x,name="array", s=0, e=10000,offset=offset, whole=TRUE, makeline=TRUE, linie=linie, di){
 targets<-x[[1]]
 conditions<-unique(targets$Cy3)
@@ -1049,7 +1050,7 @@ see<-c(see,temp)
 }
 seqset<-see+1
 seqcol<-colorselect(seqset1[seqset-1], ind=2, trans=TRUE)
-
+if(whole==TRUE){
 for(jj in 1:length(out_data)){
 
 output<-out_data[[jj]]
@@ -1075,21 +1076,50 @@ en2<-nrow(output[[7]])
 en<-nrow(output[[7]])%/%10000
 en<-en
 pdf(file=paste(di,nab,sep="/"), paper="a4r", width=0, height=0)
-if(whole==TRUE){
+
 for (i in 1:en){
 if(en > 0){
 genomeplot((i-1)*10000,(i*10000),output,conditionsused,color,offset=offset,ylim=ylim,  linie=linie, repliconsize=en2, seqcol=seqcol, seqset=seqset)}}
 genomeplot(max(0,(en2-10000)),en2,output,conditionsused,color,offset=offset,ylim=ylim,  linie=linie, repliconsize=en2,seqcol=seqcol, seqset=seqset)
 dev.off()
+
+
+}
 }
 else{
+
+
+replicons1<-select.list(names(out_data))
+replicons<-which(names(out_data)==replicons1)
+output<-out_data[[replicons]]
+
+ma<-max(output[[3]][,1:(length(output[[3]])-3)])
+#mi<-min(output[[3]][,1:(length(output[[3]])-3)])
+#offset<-round(mi-3.55, digits=0)
+#if (offset >= (mi-3.55)) {
+#offset=offset-0.5
+#}
+
+offset<-output[[11]]
+yli=ma-offset+0.5
+ylim=c(-yli,yli)
+
+print(offset)
+print(ylim)
+
+"pdf_ausgabe"
+nab<-paste(names(out_data)[replicons1],names(out_data)[sel] , name,"_",s,"_",e, ".pdf", sep="")
+st<-1
+en2<-nrow(output[[7]])
+en<-nrow(output[[7]])%/%10000
+en<-en
+pdf(file=paste(di,nab,sep="/"), paper="a4r", width=0, height=0)
+
+
 genomeplot(s,e,output,conditionsused,color,offset=offset,ylim=ylim,  linie=linie,repliconsize=en2, seqcol=seqcol, seqset=seqset)
 dev.off()
 }
 }
-}
-
-  
   
   
   
