@@ -1,5 +1,6 @@
-
-
+## Variables to set before first run:
+# Annotation File name
+annofile<-"annofile.txt"
 
 
 ascomb<-function(out,outFC){
@@ -45,7 +46,7 @@ for (i in 1:length(r)){
  asname<-c(asname,as.character(genes$SystematicName[as[i]]))
  mname<-c(mname,as.character(genes$SystematicName[mRNA[r[[i]][1]]]))
   anno<-c(anno,as.character(genes$Genenames[as[i]]))
-     
+
 }
 else{
 asname<-c(asname,as.character(genes$SystematicName[as[i]]))
@@ -87,14 +88,14 @@ assig<-c()
 for (i in 1:length(r)){
  for(j in 1: length(r[[i]])){
   if(is.na(r[[i]][j]) == FALSE){
-  
+
   if(dfeat[as[i],count] !=0 & dfeat[mRNA[r[[i]][j]],count] !=0){
-  
+
   assig<-c(assig,1)
     }
 else{
 assig<-c(assig,0)}
-	
+
 }
 
 
@@ -199,21 +200,21 @@ x
 }
 
 
-avesums<-function (x, ID = rownames(x)) 
+avesums<-function (x, ID = rownames(x))
 {
-    if (is.null(x)) 
+    if (is.null(x))
         return(NULL)
     x <- as.matrix(x)
     nspots <- nrow(x)
     narrays <- ncol(x)
     ID <- as.character(ID)
     iu <- !duplicated(ID)
-    if (mode(x) == "character") 
+    if (mode(x) == "character")
         return(x[iu, , drop = FALSE])
     u <- ID[iu]
     nprobes <- length(u)
     y <- x[iu, , drop = FALSE]
-    for (i in 1:length(u)) y[i, ] <- colSums(x[ID == u[i], , 
+    for (i in 1:length(u)) y[i, ] <- colSums(x[ID == u[i], ,
         drop = FALSE], na.rm = TRUE)
     y
 }
@@ -264,7 +265,7 @@ tar[i,]<-targets[b[i],]}
 targets<-tar
 
 
-anno<-read.csv("annotationfile_für_auswertung.txt", sep="\t")
+anno<-read.csv(annofile, sep="\t")
 nas<-which(is.na(anno$SystematicName))
 nas2<-seq(1,length(nas))
 levels(anno$SystematicName) <- c(levels(anno$SystematicName),nas2)
@@ -300,7 +301,7 @@ a<-out
  q<-select.list(c("Genomeplot","Arrayauswertung"), multiple=F, title="Anwendung")
  if(q == "Genomeplot"){
  print(offset)
- 
+
   drawgenomeplot(a,name=name, s=s, e=e, whole=whole, offset=offset, linie=linie, di=di)}
  else{
  por=TRUE
@@ -331,9 +332,9 @@ new<-"la"
 con<-conditions
 count<-1
 for(i in 1:length(con)){
-ö<-grep(paste("i",new[length(new)],"i"),paste("i",con,"i"))
-if(length(ö)>0){
-con<-con[-ö]}
+doomedData<-grep(paste("i",new[length(new)],"i"),paste("i",con,"i"))
+if(length(doomedData)>0){
+con<-con[-doomedData]}
 ne<-select.list(con, multiple=F, title=paste("choose condition",count, sep=" "))
 count<-count+1
 new<-c(new,ne)
@@ -420,9 +421,9 @@ dev.off()
 #con<-conditionsused
 #count<-1
 #for(i in 1:length(con)){
-#ö<-grep(new[length(new)],con)
-#if(length(ö)>0){
-#con<-con[-ö]}
+#ï¿½<-grep(new[length(new)],con)
+#if(length(ï¿½)>0){
+#con<-con[-ï¿½]}
 #ne<-select.list(con, multiple=F, title=paste("choose condition",count, sep=" "))
 #count<-count+1
 #new<-c(new,ne)
@@ -451,7 +452,7 @@ else{
 
 new<-numeric(0)
 for(i in 1:length(conditions)){
-t<-paste(conditions[i],"color", sep=" ") 
+t<-paste(conditions[i],"color", sep=" ")
 q<-select.list(colors(), multiple=F, title=t)
 new<-c(new,q)
 }
@@ -483,7 +484,7 @@ q
 
   #---------------------------------------------------------
   genomeplot<-function(x,y, z,zz, xy,offset=6.7, wid=0.2, ylim=c(-13,13),rest=FALSE,  seq=TRUE, names=TRUE, linie=TRUE, versatz=FALSE,punkte=FALSE, log=TRUE, nobox=FALSE, lt=1,tres=11.21, array=TRUE, gene=FALSE,  Achse=TRUE, anno=TRUE, cs=0.2, pch=18, repliconsize, seqcol, seqset){
-  
+
  conditions<-z[[1]]
  posx<-z[[2]]
  tab<-z[[3]]
@@ -494,14 +495,14 @@ q
  v<-z[[8]][,c(1,seqset)]
  color<-xy
  conditionsused<-zz
- 
+
  print=c(offset, ylim)
- 
+
  b<-numeric(0)
  for(i in 1:length(conditionsused)){
  b<-c(b,which(conditionsused[i] == conditions))
  }
- 
+
  ta<-matrix(,nrow(tab),length(conditionsused)+3)
  l<-ncol(ta)
  ll<-ncol(tab)
@@ -515,7 +516,7 @@ q
  for(i in 1:length(conditionsused)){
  ta[,i]<-tab[,b[i]]
  }
-  
+
   colnames(ta)[(l-2):(l)]<-c("start","end","len")
   colnames(ta)[1:(l-3)]<-conditionsused
   tab<-ta
@@ -574,7 +575,7 @@ minrv<--maxrv
 
 normfor<-maxfor/(ylim[2]-2.3)
 normrv<-maxrv/(ylim[2]-2.3)
- 
+
 normfor<-max(1,normfor)
 normrv<-max(1,normrv)
 
@@ -602,19 +603,19 @@ seqrv[c(1,length(seqrv))]<--2.3
 
  infsfor<-which(seqfor==Inf | seqfor==-Inf)
  infsrv<-which(seqrv==Inf | seqrv==-Inf)
- 
+
  seqfor[infsfor]<-2.3
  seqrv[infsrv]<--2.3
- 
- 
- 
 
- 
- 
+
+
+
+
+
 polygon(vv[(xx):(yy),1],seqfor, col=seqcol[i], border=NA)
 polygon(vv[(xx):(yy),1],seqrv, col=seqcol[i], border=NA)
 
- 
+
 #polygon(vv[(xx):(yy),1],seqfor, col=alpha(seqcol[i],0.4), border=NA)
 #polygon(vv[(xx):(yy),1],seqrv, col=alpha(seqcol[i],0.4), border=NA)
 
@@ -661,7 +662,7 @@ legend("topright", legend=c("(-) total RNA","(+) with primary 5'ends" ),bty="n",
 
 
 
-#restrictionssites einzeichnen für TMDH
+#restrictionssites einzeichnen fï¿½r TMDH
 if(rest==TRUE){
 ll<-numeric(0)
 for (i in 1:nrow(hpaII)){
@@ -698,10 +699,10 @@ b
 
 for(i in 1:length(ll)){
   for(jj in 1:length(b)){
-  
-  
+
+
       lines(line[[ll[i]]][[1]],(line[[ll[i]]][[b[jj]+1]]),col=color[jj])
-	
+
 	  }}
 
 
@@ -726,9 +727,9 @@ dimen[,2]<-wid
 if(punkte==TRUE){
 for(i in 1:length(conditionsused)){
     assign(colnames(tab)[i],((((tab[ll,i]))-(offset))*as.numeric(paste(orientation[ll],1, sep=""))*(-1)))
-	
+
 	points(c(posx[ll]), c(get(colnames(tab)[i])), col=color[i] ,pch=pch,cex=cs)
-	
+
   }
 
 }
@@ -743,26 +744,26 @@ for(i in 1:length(conditionsused)){
 }
 }
 "Achsen"
-#Axis(, side=2, at=c(2.3,3.3,4.3,5.3,6.3,7.3,8.3,9.3,10.3,11.3,12.3,13.3), labels=c(9,10,11,12,13,14,15,16,17,18,19,20), cex=0.5, col="black") 
-#Axis(, side=2, at=c(-2.3,-3.3,-4.3,-5.3,-6.3,-7.3,-8.3,-9.3,-10.3,-11.3,-12.3,-13.3), labels=c(9,10,11,12,13,14,15,16,17,18,19,20), cex=0.5, col="black") 
+#Axis(, side=2, at=c(2.3,3.3,4.3,5.3,6.3,7.3,8.3,9.3,10.3,11.3,12.3,13.3), labels=c(9,10,11,12,13,14,15,16,17,18,19,20), cex=0.5, col="black")
+#Axis(, side=2, at=c(-2.3,-3.3,-4.3,-5.3,-6.3,-7.3,-8.3,-9.3,-10.3,-11.3,-12.3,-13.3), labels=c(9,10,11,12,13,14,15,16,17,18,19,20), cex=0.5, col="black")
 
 #att<-seq(2.3,ylim[2],by=1)
 #lab<-seq(2.3+offset,2.3+offset+length(att),by=1)
 #lab<-lab[1:length(att)]
-#Axis(, side=2, at=att, labels=lab, cex=0.5, col="black") 
+#Axis(, side=2, at=att, labels=lab, cex=0.5, col="black")
 #att<-seq(ylim[1],-2.3,by=1)
 #lab<-seq(-2.3-offset,-2.3-offset-length(att),by=-1)
 #lab<-lab[1:length(att)]
 #att<-sort(att, decreasing=TRUE)
-#Axis(, side=2, at=att, labels=lab, cex=0.5, col="black") 
+#Axis(, side=2, at=att, labels=lab, cex=0.5, col="black")
 
 att<-seq(1,30)
 att<-att-offset+2.3
 s<-which(att >= 2.3)
 att<-att[s]
 lab<-s
-Axis(, side=2, at=att, labels=lab, cex=0.5, col="black") 
-Axis(, side=2, at=att*(-1), labels=lab, cex=0.5, col="black") 
+Axis(, side=2, at=att, labels=lab, cex=0.5, col="black")
+Axis(, side=2, at=att*(-1), labels=lab, cex=0.5, col="black")
 
 
 
@@ -776,15 +777,15 @@ ticksrv<-(sqrt(c(1,10,25,50,100,250,500,1000,2500,5000,10000,25000,50000,100000)
 labfor<-c(1,10,25,50,100,250,500,1000,2500,5000,10000,25000,50000,100000)
 labrv<-c(1,10,25,50,100,250,500,1000,2500,5000,10000,25000,50000,100000)
 
-#Axis(, side=4, at=c(3.3,4.3,5.3,6.3,7.3,8.3,9.3,10.3,11.3,12.3,13.3,14.3,15.3,16.3,17.3), labels=c(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14), cex=0.5, col="lightgrey") 
-#Axis(, side=4, at=c(-3.3,-4.3,-5.3,-6.3,-7.3,-8.3,-9.3,-10.3,-11.3,-12.3,-13.3,-14.3,-15.3,-16.3,-17.3), labels=c(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14), cex=0.5, col="lightgrey")} 
-Axis(, side=4, at=ticksfor, labels=labfor, cex=0.3, col="lightgrey") 
-Axis(, side=4, at=ticksrv, labels=labrv, cex=0.3, col="lightgrey") 
+#Axis(, side=4, at=c(3.3,4.3,5.3,6.3,7.3,8.3,9.3,10.3,11.3,12.3,13.3,14.3,15.3,16.3,17.3), labels=c(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14), cex=0.5, col="lightgrey")
+#Axis(, side=4, at=c(-3.3,-4.3,-5.3,-6.3,-7.3,-8.3,-9.3,-10.3,-11.3,-12.3,-13.3,-14.3,-15.3,-16.3,-17.3), labels=c(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14), cex=0.5, col="lightgrey")}
+Axis(, side=4, at=ticksfor, labels=labfor, cex=0.3, col="lightgrey")
+Axis(, side=4, at=ticksrv, labels=labrv, cex=0.3, col="lightgrey")
 }
 
 else
 {
-Axis(, side=4, at=c(2.3,3.3,4.3,5.3,6.3,7.3,8.3,9.3,10.3,11.3,12.3,13.3,14.3), labels=c(0,round(k/12),round(k*2/12),round(k*3/12),round(k*4/12),round(k*5/12),round(k*6/12),round(k*7/12),round(k*8/12),round(k*9/12),round(k*10/12),round(k*11/12),round(k)), cex=0.5, col="lightgrey") 
+Axis(, side=4, at=c(2.3,3.3,4.3,5.3,6.3,7.3,8.3,9.3,10.3,11.3,12.3,13.3,14.3), labels=c(0,round(k/12),round(k*2/12),round(k*3/12),round(k*4/12),round(k*5/12),round(k*6/12),round(k*7/12),round(k*8/12),round(k*9/12),round(k*10/12),round(k*11/12),round(k)), cex=0.5, col="lightgrey")
 Axis(, side=4, at=c(-2.3,-3.3,-4.3,-5.3,-6.3,-7.3,-8.3,-9.3,-10.3,-11.3,-12.3,-13.3,-14.3), labels=c(0,round(abs(a)/12),round(abs(a)*2/12),round(abs(a)*3/12),round(abs(a)*4/12),round(abs(a)*5/12),round(abs(a)*6/12),round(abs(a)*7/12),round(abs(a)*8/12),round(abs(a)*9/12),round(abs(a)*10/12),round(abs(a)*11/12),round(abs(a))), cex=0.5, col="lightgrey")} }
 
 
@@ -874,7 +875,7 @@ abline(h=0, col="black")}
 
 
 
-}  
+}
 
 
 #genomeplot((i-1)*10000,(i*10000),output,conditionsused,color,offset=offset,ylim=ylim,  linie=linie, repliconsize=en2, seqcol=seqcol, seqset=seqset)
@@ -1047,7 +1048,7 @@ rownames(con)<-lev
 colnames(con)<-lev
 for(i in 1 :length(lev)){
    for(j in 1 :length(lev)){
-con[i,j]<-paste(colnames(con)[i],rownames(con)[j], sep="-")}} 
+con[i,j]<-paste(colnames(con)[i],rownames(con)[j], sep="-")}}
 
 con1<-select.list(sort(con), multiple=TRUE)
 
@@ -1056,7 +1057,7 @@ rownames(con2)<-paste("(",con1,")", sep="")
 colnames(con2)<-paste("(",con1,")", sep="")
 for(i in 1 :length(con1)){
    for(j in 1 :length(con1)){
-con2[i,j]<-paste(colnames(con2)[i],rownames(con2)[j], sep="-")}} 
+con2[i,j]<-paste(colnames(con2)[i],rownames(con2)[j], sep="-")}}
 
 con3<-select.list(sort(con2), multiple=TRUE)
 
@@ -1080,7 +1081,7 @@ p.value<-select.list(as.character(seq(0.01,0.05, by=0.01)), title="significant_p
 p.value<-as.numeric(p.value)
 
 lfc<-select.list(as.character(seq(0.5,3, by=0.1)), title="significant_log2_foldchange")
-lfc<-as.numeric(lfc)  
+lfc<-as.numeric(lfc)
 
 met<-select.list(c("separate","global"), title="decideTests_method (see manual)")
 
@@ -1183,7 +1184,7 @@ dev.off()
 
 nab<-paste(di,"raw_data_quality", sep="/")
 p<-matrix(targets$Cy3,length(colnames(raw1$E)),1, dimnames=list(colnames(raw1$E), "condition"))
-p<-as.data.frame(p) 
+p<-as.data.frame(p)
 m<-data.frame(labelDescription="condition", row.names="condition")
 phenoData <- new("AnnotatedDataFrame", data=p, varMetadata=m)
 a<-ExpressionSet(assayData=raw1$E, phenoData=phenoData)
@@ -1192,7 +1193,7 @@ arrayQualityMetrics(a, outdir = nab, spatial=TRUE, intgroup="condition",do.logtr
 for(i in 1:4){
 nab<-paste(di,names(sub2)[i], sep="/")
 p<-matrix(targets$Cy3,length(colnames(sub2[[i]]$E)),1, dimnames=list(colnames(sub2[[i]]$E), "condition"))
-p<-as.data.frame(p) 
+p<-as.data.frame(p)
 m<-data.frame(labelDescription="condition", row.names="condition")
 phenoData <- new("AnnotatedDataFrame", data=p, varMetadata=m)
 a<-ExpressionSet(assayData=sub2[[i]]$E, phenoData=phenoData)
@@ -1217,7 +1218,7 @@ sel<-grep(paste("i",sel,"i"), paste("i",names(sub2),"i"))
   data1<-sub2[[sel]]
   data1<-avereps(data1, ID=data1$genes$ProbeName)
   data1<-cbind(data1$E,data1$genes)
-  
+
   replicons<-unique(data1$Replicon)
   replicons<-(na.omit(replicons))
 
@@ -1226,51 +1227,51 @@ sel<-grep(paste("i",sel,"i"), paste("i",names(sub2),"i"))
     temp<-which(data1$Replicon==replicons[i])
 	temp_data<-data1[temp,]
 	replicon[[i]]<-temp_data
-	names(replicon[i])<-replicons[i] 
+	names(replicon[i])<-replicons[i]
    }
 
   targets<-x[[1]]
   conditions<-y
- 
+
  # load("NGS_data.Rdata")
-  
+
   output<-list()
-  
+
   for(jj in 1:length(replicons)){
-  
-  
+
+
   data1<-replicon[[jj]]
-  
+
   clist<-numeric(0)
   data2<-matrix(, nrow(data1), length(conditions))
   colnames(data2)<-conditions
-  
+
   for(i in 1:length(conditions)){
-  
+
   clist<-grep(paste(conditions[i],".-.", sep=""), colnames(data1))
   dat<-matrix(,nrow(data1),length(clist))
-   
+
   for( j in 1:length(clist)){
-   
+
    dat[,j]<-data1[,clist[j]]
-   
-   
+
+
    }
    data2[,i]<-rowMeans(dat)
-  
-  
+
+
   }
-  
+
   data2<-cbind(data2, data1)
-  
+
   b<-sort.list(data2$start, na.last=T)
-  
+
   data2<-as.matrix(data2)
   data3<-matrix(,length(b),ncol(data2))
   for(i in 1:length(b)){
   data3[i,]<-data2[b[i],]}
   colnames(data3)<-colnames(data2)
-  
+
   b<-sort.list(data3[,ncol(data3)], na.last=NA)
   data4<-matrix(,length(b),ncol(data2))
   for(i in 1:length(b)){
@@ -1313,10 +1314,10 @@ b<-which(paste("i",features[i],"i") == paste("i",data5$SystematicName,"i"))
 line[[i]]<-rep(list(list()), length(conditions)+1)
 
   line[[i]][[1]]<-posx[b]
-  
+
     for(j in 1: length(conditions)){
 	  line[[i]][[j+1]]<-(ddd[b,j]-(offset))*(or[b[1]])*(-1)
-	  
+
 	  }}
 
 }
@@ -1335,10 +1336,10 @@ rep_length<-c(3573470,3573470)
 #gff2<-read.csv(jff, sep="\t")
 #gff2<-gfftojff(jff)
 
-  
-#in case of PCC6803 
-gff2<-read.csv("anno4.txt", sep="\t")  
-  
+
+#in case of PCC6803
+gff2<-read.csv("anno4.txt", sep="\t")
+
 graph_file<- paste(replicons[jj],"_rev.grp", sep="")
 t_file<-paste(replicons[jj],"_fwd.grp", sep="")
 
@@ -1351,7 +1352,7 @@ hhh<-grep(t_file, di)
 if(length(hh) > 0 & length(hhh) > 0){
 	graph<-read.table(graph_file)
 	t<-read.table(t_file)
-	
+
 	l<-seq(1,nrow(t))
 	t<-cbind(l,t)
 	graph<-cbind(l,graph)
@@ -1370,7 +1371,7 @@ t<-cbind(l,t)
 graph<-cbind(l,graph)
 graph<-as.matrix(graph)
 v<-as.matrix(t)
-  
+
 }
 
 seqset<-c()
@@ -1395,7 +1396,6 @@ colnames(graph)[2:ncol(graph)]<-as.character(seqset[1,])
   save(output, file="genomeplotd.Rdata")
   output
   }
-  
 
 
 
@@ -1403,4 +1403,6 @@ colnames(graph)[2:ncol(graph)]<-as.character(seqset[1,])
 
 
 
-analyze(name="ggg")
+
+#analyze(name="ggg")
+    
