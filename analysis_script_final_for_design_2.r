@@ -612,8 +612,8 @@ seqrv[c(1,length(seqrv))]<--2.3
 
 
 
-polygon(vv[(xx):(yy),1],seqfor, col=seqcol[i], border=NA)
-polygon(vv[(xx):(yy),1],seqrv, col=seqcol[i], border=NA)
+polygon(vv[(xx):(yy),1],seqfor, col=seqcol[i], border=1)
+polygon(vv[(xx):(yy),1],seqrv, col=seqcol[i], border=1)
 
 
 #polygon(vv[(xx):(yy),1],seqfor, col=alpha(seqcol[i],0.4), border=NA)
@@ -1405,4 +1405,4 @@ colnames(graph)[2:ncol(graph)]<-as.character(seqset[1,])
 
 
 #analyze(name="ggg")
-    
+����
