@@ -629,6 +629,34 @@ sub_TU_fit[[i]]$genes<-sub_TU_fit[[i]]$genes[-Nas,]
 }
 
 
+re<-select.list(choices=c("Yes","No"), multiple=F, title="Average identities required?")
+
+if(re=="Yes"){
+	variants<-c("quantile","cyclicloess","normexp_qunatile","normexp_cyclicloess","raw")
+	ave_probes_fit<-x[[5]]
+	ave_features_fit<-x[[6]]
+	for(i in 1:5){
+		ave_probes_fit[[1]]<- lmFit(ave_probes_fit[[i]], design)
+		ave_features_fit[[i]]<- lmFit(ave_features_fit[[i]], design)
+	}
+	what<-select.list(c("Probes","Features"), multiple=F, title="Individual average identities required?")
+	if(what=="Probes"){
+		for(i in 1:5){
+			naf<-paste("average_intensity", variants[i],"probes.txt", sep="_")
+			naf<-paste(di,naf, sep="/")
+			write.table(cbind(ave_probes_fit[[1]]$coefficients,ave_probes_fit[[1]]$genes), file=naf, sep="\t", row.names=F, quote=F)
+		}
+	}
+	if(what=="Features"){
+		for(i in 1:5){
+			naf<-paste("average_intensity", variants[i],"features.txt", sep="_")
+			naf<-paste(di,naf, sep="/")
+			write.table(cbind(ave_features_fit[[1]]$coefficients,ave_features_fit[[1]]$genes), file=naf, sep="\t", row.names=F, quote=F)
+		}
+	}
+}
+
+
 
 for(i in 1:5){
 sub_probes_fit[[i]]<- eBayes(contrasts.fit(lmFit(sub_probes_fit[[i]], design), cont.wt))
