@@ -778,8 +778,9 @@ write.table(results_TU[[i]], file=naf, sep="\t")
 }
 
 }
-
-
+#################
+ave_probes_fit[[i]]<- lmFit(ave_probes_fit[[i]], design)
+		ave_features_fit[[i]]<- lmFit(ave_features_fit[[i]], design)
 #-------------------------------------------
 genomeplotdata<-function(x,y, makeline=TRUE){
 
@@ -791,11 +792,20 @@ sub2<-x[[3]]
 temp_out<-list()
 
 for(ii in 1:length(sub2)){
-
-
-  data1<-sub2[[ii]]
-  data1<-avereps(data1, ID=data1$genes$ProbeName)
-  data1<-cbind(data1$E,data1$genes)
+	targets<-x[[1]]
+	conditions<-unique(targets$Cy3)
+	
+	f <- factor(targets$Cy3)
+	lev<-levels(f)
+	design <- model.matrix(~0+f)
+	colnames(design) <- lev
+	
+	dat<-lmFit(sub2[[ii]], design)
+	
+	data1<-cbind(dat$coefficients,dat$genes)
+  # data1<-sub2[[ii]]
+  # data1<-avereps(data1, ID=data1$genes$ProbeName)
+  # data1<-cbind(data1$E,data1$genes)
   
   replicons<-unique(data1$Replicon)
   replicons<-(na.omit(replicons))
@@ -808,8 +818,7 @@ for(ii in 1:length(sub2)){
 	names(replicon[i])<-replicons[i] 
    }
 
-  targets<-x[[1]]
-  conditions<-unique(targets$Cy3)
+ 
  
  # load("NGS_data.Rdata")
   
@@ -820,27 +829,27 @@ for(ii in 1:length(sub2)){
   
   data1<-replicon[[jj]]
   
-  clist<-numeric(0)
-  data2<-matrix(, nrow(data1), length(conditions))
-  colnames(data2)<-conditions
+  # clist<-numeric(0)
+  # data2<-matrix(, nrow(data1), length(conditions))
+  # colnames(data2)<-conditions
   
-  for(i in 1:length(conditions)){
+  # for(i in 1:length(conditions)){
   
-    clist<-grep(paste(conditions[i],".-.", sep=""), colnames(data1))
-  dat<-matrix(,nrow(data1),length(clist))
+    # clist<-grep(paste(conditions[i],".-.", sep=""), colnames(data1))
+  # dat<-matrix(,nrow(data1),length(clist))
    
-  for( j in 1:length(clist)){
+  # for( j in 1:length(clist)){
    
-   dat[,j]<-data1[,clist[j]]
+   # dat[,j]<-data1[,clist[j]]
    
    
-   }
-   data2[,i]<-rowMeans(dat)
+   # }
+   # data2[,i]<-rowMeans(dat)
   
   
-  }
+  # }
   
-  data2<-cbind(data2, data1)
+  data2<-cbind(data1[,1:length(conditions)], data1)
   
   b<-sort.list(data2$start, na.last=T)
   
@@ -1063,6 +1072,7 @@ out_data<-output
 
 sel<-select.list(names(out_data))
 sel<-which(names(out_data)==sel)
+norm_name<-names(out_data)[sel]
 
 out_data<-out_data[[sel]]
 
@@ -1098,7 +1108,7 @@ print(offset)
 print(ylim)
 
 "pdf_ausgabe"
-nab<-paste(names(out_data)[jj],names(out_data)[sel] , name, ".pdf", sep="")
+nab<-paste(names(out_data)[jj],"_",norm_name,"_", name, ".pdf", sep="")
 st<-1
 en2<-nrow(output[[7]])
 en<-nrow(output[[7]])%/%10000
@@ -1136,7 +1146,7 @@ print(offset)
 print(ylim)
 
 "pdf_ausgabe"
-nab<-paste(names(out_data)[replicons1],names(out_data)[sel] , name,"_",s,"_",e, ".pdf", sep="")
+nab<-paste(names(out_data)[replicons1],"_",norm_name,"_", name,"_",s,"_",e, ".pdf", sep="")
 st<-1
 en2<-nrow(output[[7]])
 en<-nrow(output[[7]])%/%10000
